@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "method": "jsdom DOM interactions against live FastAPI; not a rendered-browser screenshot test",
+  "scenarios": [
+    "registration/login",
+    "text+URL inference and SHAP UI",
+    "create report",
+    "edit report",
+    "pending lookup count 0",
+    "admin login/moderation",
+    "approved lookup count 1",
+    "system stats",
+    "user management list",
+    "audit list"
+  ],
+  "js_errors": []
+}

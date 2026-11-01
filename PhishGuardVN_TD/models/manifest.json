@@ -1,0 +1,143 @@
+{
+  "sha256": {
+    "vietnamese_sms_dataset.zip": "62cdb5fc63fc4ca557f99679eac63e61d59a74719b105e6274b15f4a824d31b5",
+    "phiusiil+phishing+url+dataset.zip": "0a639fd03aea6308c5b1c10c92aa23c2ce1505447a9137271865cd0badc9a59a"
+  },
+  "seed": 42,
+  "versions": {
+    "python": "3.12.14",
+    "sklearn": "1.8.0",
+    "xgboost": "3.4.1"
+  },
+  "test_evaluated": false,
+  "url_selected": "XGBoost_depth6",
+  "url_threshold": 0.38999999999999996,
+  "feature_columns": [
+    "URLLength",
+    "DomainLength",
+    "IsDomainIP",
+    "TLDLength",
+    "NoOfSubDomain",
+    "NoOfLettersInURL",
+    "LetterRatioInURL",
+    "NoOfDegitsInURL",
+    "DegitRatioInURL",
+    "NoOfEqualsInURL",
+    "NoOfQMarkInURL",
+    "NoOfAmpersandInURL",
+    "NoOfOtherSpecialCharsInURL",
+    "SpacialCharRatioInURL",
+    "IsHTTPS",
+    "NoOfObfuscatedChar",
+    "ObfuscationRatio",
+    "HasObfuscation",
+    "path_length",
+    "query_length",
+    "host_entropy",
+    "url_entropy",
+    "dots",
+    "hyphens",
+    "at_signs",
+    "slashes",
+    "has_punycode",
+    "has_non_ascii",
+    "has_explicit_port",
+    "credential_words",
+    "financial_words"
+  ],
+  "infrastructure_model_used": false,
+  "source_label_mapping": {
+    "PhiUSIIL_0": "Phishing",
+    "PhiUSIIL_1": "Legitimate"
+  },
+  "url_rows": 233430,
+  "url_splits": {
+    "train": 161438,
+    "validation": 37975,
+    "test": 34017
+  },
+  "sms_audit": {
+    "conflicting_keys_removed": 1,
+    "max_cross_similarity": {
+      "train_validation": 0.8796923160552979,
+      "train_test": 0.8789176344871521,
+      "validation_test": 0.8757433891296387
+    },
+    "rows": 2436,
+    "splits": {
+      "train": 1716,
+      "validation": 376,
+      "test": 344
+    }
+  },
+  "sms_domain_rows_excluded_from_URL_corpus": 1253,
+  "url_conflicting_keys_removed": 1,
+  "text_model": "TFIDF_LR_source_binary",
+  "text_threshold": 0.5199999999999999,
+  "se_thresholds": {
+    "impersonation": 0.05,
+    "urgency_fear": 0.5199999999999999,
+    "reward_benefit": 0.41999999999999993,
+    "sensitive_info_request": 0.4499999999999999,
+    "financial_transaction": 0.27999999999999997,
+    "link_login_app_action": 0.42999999999999994
+  },
+  "fusion": {
+    "precision": 0.972972972972973,
+    "recall": 0.9230769230769231,
+    "f1": 0.9473684210526315,
+    "fpr": 0.011583011583011582,
+    "pr_auc": 0.9839585391678176,
+    "brier": 0.04840013284953046,
+    "threshold": 0.5199999999999999,
+    "confusion_matrix": [
+      [
+        256,
+        3
+      ],
+      [
+        9,
+        108
+      ]
+    ],
+    "alpha": 1.0,
+    "status": "proxy_only_not_validated_phishing_probability",
+    "target": "source_spam_or_scam",
+    "paired_validation_rows": 236,
+    "validation_rows": 376,
+    "test_used": false
+  },
+  "se_label_status": "weak_rules_v2_unreviewed",
+  "se_support": {
+    "impersonation": {
+      "train_positives": 3,
+      "validation_positives": 2,
+      "adequate_counts": false
+    },
+    "urgency_fear": {
+      "train_positives": 38,
+      "validation_positives": 3,
+      "adequate_counts": false
+    },
+    "reward_benefit": {
+      "train_positives": 169,
+      "validation_positives": 40,
+      "adequate_counts": true
+    },
+    "sensitive_info_request": {
+      "train_positives": 11,
+      "validation_positives": 3,
+      "adequate_counts": false
+    },
+    "financial_transaction": {
+      "train_positives": 17,
+      "validation_positives": 3,
+      "adequate_counts": false
+    },
+    "link_login_app_action": {
+      "train_positives": 103,
+      "validation_positives": 32,
+      "adequate_counts": true
+    }
+  }
+}

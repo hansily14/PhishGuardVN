@@ -1,0 +1,9 @@
+original,variant,url,p_phishing,inference_ms
+https://example.com/login,original,https://example.com/login,0.9999058246612549,11.246599999140017
+https://example.com/login,https_scheme,https://example.com/login,0.9999058246612549,13.457699998980388
+https://example.com/login,extra_path,https://example.com/login/account/verify,0.9999866485595703,13.040500001807231
+https://example.com/login,query_added,https://example.com/login?ref=campaign123,0.9999974966049194,11.504199999762932
+http://secure-account.example.org/verify?user=123,original,http://secure-account.example.org/verify?user=123,0.9999977350234985,11.809700001322199
+http://secure-account.example.org/verify?user=123,https_scheme,https://secure-account.example.org/verify?user=123,0.9999908208847046,12.841099996876437
+http://secure-account.example.org/verify?user=123,extra_path,http://secure-account.example.org/verify?user=123/account/verify,0.9999988079071045,12.178799999674084
+http://secure-account.example.org/verify?user=123,query_added,http://secure-account.example.org/verify?user=123&ref=campaign123,0.999998927116394,11.80959999692277

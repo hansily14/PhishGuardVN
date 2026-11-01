@@ -1,0 +1,8 @@
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+instance/
+*.db
+*.db-wal
+*.db-shm
+.env

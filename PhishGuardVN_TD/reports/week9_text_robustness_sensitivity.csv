@@ -1,0 +1,16 @@
+﻿case,variant,text,p_source_spam_scam,latency_ms,status
+1,original,Vui lòng xác minh tài khoản ngân hàng của bạn ngay hôm nay.,,0.6385000015143305,ERROR: idf vector is not fitted
+1,no_diacritics,Vui long xac minh tai khoan ngan hang cua ban ngay hom nay.,,0.5880000026081689,ERROR: idf vector is not fitted
+1,abbreviation,Vui lòng xác minh tk NH của bạn ngay hôm nay.,,0.3177999969921075,ERROR: idf vector is not fitted
+1,typo,Vui lòng xác mih tài khoản ngân hàng của bạn ngay hôm nay.,,0.35460000071907416,ERROR: idf vector is not fitted
+1,inserted_chars,V.u.i. l.òng xác minh tài khoản ngân hàng của bạn ngay hôm nay.,,0.31680000029155053,ERROR: idf vector is not fitted
+2,original,Chúc mừng bạn nhận được phần thưởng. Truy cập liên kết để xác nhận.,,0.3532999980961904,ERROR: idf vector is not fitted
+2,no_diacritics,Chuc mung ban nhan duoc phan thuong. Truy cap lien ket de xac nhan.,,0.3426000002946239,ERROR: idf vector is not fitted
+2,abbreviation,Chúc mừng bạn nhận được phần thưởng. Truy cập liên kết để xác nhận.,,0.31879999733064324,ERROR: idf vector is not fitted
+2,typo,Chúc mừng bạn nhận được phần thưởng. Truy cập liên kết để xác nhận.,,0.31740000122226775,ERROR: idf vector is not fitted
+2,inserted_chars,C.h.úc. m.ừng bạn nhận được phần thưởng. Truy cập liên kết để xác nhận.,,0.3438000021560583,ERROR: idf vector is not fitted
+3,original,Chiều nay chúng ta gặp nhau lúc 15 giờ nhé.,,0.3127999989374075,ERROR: idf vector is not fitted
+3,no_diacritics,Chieu nay chung ta gap nhau luc 15 gio nhe.,,0.2714000002015382,ERROR: idf vector is not fitted
+3,abbreviation,Chiều nay chúng ta gặp nhau lúc 15 giờ nhé.,,0.269199998001568,ERROR: idf vector is not fitted
+3,typo,Chiều nay chúng ta gặp nhau lúc 15 giờ nhé.,,0.2576000006229151,ERROR: idf vector is not fitted
+3,inserted_chars,C.h.i.ều. nay chúng ta gặp nhau lúc 15 giờ nhé.,,0.2844000009645242,ERROR: idf vector is not fitted

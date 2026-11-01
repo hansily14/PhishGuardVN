@@ -1,0 +1,10 @@
+{
+  "week": 9,
+  "url_test_evaluated": true,
+  "xlmr_status": "BLOCKED: checkpoint and reviewed 3-class labels missing",
+  "text_test_status": "NOT EVALUATED: source SMS test text/labels and XLM-R artifacts not bundled",
+  "fusion_status": "BLOCKED: current fusion uses source spam/scam proxy labels, not reviewed phishing ground truth",
+  "robustness_status": "sensitivity-only where labels are unavailable",
+  "api_tests": "rerun with python -m pytest -q; session expiry requires live server test",
+  "test_tuning_policy": "No model/threshold/alpha tuning on Test"
+}

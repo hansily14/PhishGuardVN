@@ -1,0 +1,62 @@
+{
+  "xgboost": {
+    "model": "XGBoost_depth6",
+    "threshold_locked_from_validation": 0.38999999999999996,
+    "n_test": 34017,
+    "precision": 0.992324478892317,
+    "recall": 0.9552336110105034,
+    "f1": 0.9734258507418617,
+    "fpr": 0.005046507025529388,
+    "pr_auc_average_precision": 0.991323399952032,
+    "confusion_matrix_TN_FP_FN_TP": [
+      [
+        20110,
+        102
+      ],
+      [
+        618,
+        13187
+      ]
+    ],
+    "total_inference_seconds": 0.08804539999982808,
+    "mean_inference_ms_per_url": 0.002588276450005235
+  },
+  "logistic_regression": {
+    "precision": 0.9847911622276029,
+    "recall": 0.9427743571169866,
+    "f1": 0.9633248214351801,
+    "fpr": 0.009944587373837325,
+    "pr_auc_average_precision": 0.9866454156930528,
+    "threshold": 0.31999999999999995,
+    "confusion_matrix_TN_FP_FN_TP": [
+      [
+        20011,
+        201
+      ],
+      [
+        790,
+        13015
+      ]
+    ],
+    "model": "LogisticRegression_C1.0",
+    "validation_selection": {
+      "precision": 0.9875903614457832,
+      "recall": 0.9210629810663521,
+      "f1": 0.953167243233815,
+      "fpr": 0.0102101506740682,
+      "pr_auc_average_precision": 0.977962392843319,
+      "threshold": 0.31999999999999995,
+      "confusion_matrix_TN_FP_FN_TP": [
+        [
+          19970,
+          206
+        ],
+        [
+          1405,
+          16394
+        ]
+      ]
+    }
+  },
+  "protocol": "Threshold and model selected on Validation; Test used only for final evaluation."
+}
