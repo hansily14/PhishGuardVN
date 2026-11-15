@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from phishguard.api import create_app
 from phishguard.database import connection
-from phishguard.security import password_hash
+from phishguard.security import normalize_bank_account, password_hash
 from phishguard.features import extract_urls,normalize_url,domain_group,feature_frame,infrastructure_features
 from phishguard.engine import Engine
 from phishguard.infrastructure import snapshot_from_rdap
@@ -136,3 +136,55 @@ def test_training_metadata_and_leakage():
     assert (df.y_phishing==1-df.label).all()
     s=pd.read_csv(root/'data/social_engineering_700_v2.csv');assert len(s)==700
     for a,b in [('train','validation'),('train','test'),('validation','test')]:assert not set(s.loc[s.split==a,'group'])&set(s.loc[s.split==b,'group'])
+
+
+def test_bank_account_report_and_lookup(clients):
+    user, other, admin, path, app = clients
+    assert normalize_bank_account(' 0012-3456 7890 ') == '001234567890'
+    with pytest.raises(ValueError):
+        normalize_bank_account('12345')
+    with pytest.raises(ValueError):
+        normalize_bank_account('1234AB6789')
+    body = {'target_type':'bank_account','target':' 0012-3456 7890 ',
+            'description':'Tài khoản này được phản ánh trong giao dịch có dấu hiệu lừa đảo.'}
+    created = user.post('/api/reports', json=body)
+    assert created.status_code == 201, created.text
+    rid = created.json()['id']
+    assert other.get('/api/lookup?target_type=bank_account&q=001234567890').json()['approved_reports'] == 0
+    approved = admin.post(f'/api/admin/reports/{rid}/moderate', json={
+        'status':'approved','note':'Đã rà soát thông tin phản ánh.','version':1})
+    assert approved.status_code == 200, approved.text
+    found = other.get('/api/lookup?target_type=bank_account&q=001234567890')
+    assert found.status_code == 200
+    assert found.json()['approved_reports'] == 1
+    assert found.json()['target'] == '001234567890'
+
+
+def test_legacy_reports_table_migrates_without_data_loss(tmp_path):
+    import sqlite3
+    from phishguard.database import initialize
+    db_path = tmp_path / 'legacy.db'
+    raw = sqlite3.connect(db_path)
+    raw.executescript("""
+        CREATE TABLE users(id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL DEFAULT '2026-01-01');
+        CREATE TABLE reports(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id),target_type TEXT NOT NULL CHECK(target_type IN ('phone','url')),target TEXT NOT NULL,description TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),admin_note TEXT NOT NULL DEFAULT '',version INTEGER NOT NULL DEFAULT 1,deleted INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT '2026-01-01',updated_at TEXT NOT NULL DEFAULT '2026-01-01');
+        INSERT INTO users(id,username,password_hash,role) VALUES(1,'legacy_user','hash','user');
+        INSERT INTO reports(id,user_id,target_type,target,description) VALUES(7,1,'phone','0901234567','Báo cáo cũ cần được giữ lại.');
+    """)
+    raw.commit(); raw.close()
+    initialize(db_path)
+    with connection(db_path) as db:
+        old = db.execute('SELECT id,target FROM reports WHERE id=7').fetchone()
+        assert tuple(old) == (7,'0901234567')
+        db.execute("INSERT INTO reports(user_id,target_type,target,description) VALUES(1,'bank_account','0012345678','Báo cáo tài khoản ngân hàng hợp lệ.')")
+        assert db.execute('SELECT count(*) FROM reports').fetchone()[0] == 2
+
+
+def test_check_api_rejects_special_inputs(clients):
+    user, other, admin, path, app = clients
+    assert user.post('/api/checks', json={}).status_code == 422
+    assert user.post('/api/checks', json={'urls':['javascript://alert.com']}).status_code == 422
+    assert user.post('/api/checks', json={'text':'Thông báo kiểm thử','urls':['https://example.com']*21}).status_code == 422
+    multi = user.post('/api/checks', json={'text':'Vui lòng kiểm tra nội dung này.','urls':['https://example.com/login','https://example.org/verify']})
+    assert multi.status_code == 200, multi.text
+    assert len(multi.json()['urls']) == 2
