@@ -4,7 +4,7 @@ from pathlib import Path
 SCHEMA='''
 CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('user','admin')), active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
 CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,user_id INTEGER REFERENCES users(id),csrf TEXT NOT NULL, expires_at REAL NOT NULL);
-CREATE TABLE IF NOT EXISTS reports(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id),target_type TEXT NOT NULL CHECK(target_type IN ('phone','url')),target TEXT NOT NULL,description TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),admin_note TEXT NOT NULL DEFAULT '',version INTEGER NOT NULL DEFAULT 1,deleted INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')),updated_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
+CREATE TABLE IF NOT EXISTS reports(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id),target_type TEXT NOT NULL CHECK(target_type IN ('phone','url','bank_account')),target TEXT NOT NULL,description TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),admin_note TEXT NOT NULL DEFAULT '',version INTEGER NOT NULL DEFAULT 1,deleted INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')),updated_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
 CREATE UNIQUE INDEX IF NOT EXISTS one_report_per_user_target ON reports(user_id,target_type,target) WHERE deleted=0;
 CREATE INDEX IF NOT EXISTS report_lookup ON reports(target_type,target,status,deleted);
 CREATE TABLE IF NOT EXISTS checks(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id),input_text TEXT NOT NULL,result_json TEXT NOT NULL,alert INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
@@ -22,4 +22,26 @@ def connection(path):
 
 def initialize(path):
     Path(path).parent.mkdir(parents=True,exist_ok=True)
-    with connection(path) as db:db.execute('PRAGMA journal_mode=WAL');db.executescript(SCHEMA)
+    with connection(path) as db:
+        db.execute('PRAGMA journal_mode=WAL')
+        db.executescript(SCHEMA)
+        # Migrate databases created by v0.5.0 (phone/url only) without losing reports.
+        row=db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='reports'").fetchone()
+        if row and "'bank_account'" not in (row['sql'] or ''):
+            db.execute('''CREATE TABLE reports_new(
+                id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id),
+                target_type TEXT NOT NULL CHECK(target_type IN ('phone','url','bank_account')),
+                target TEXT NOT NULL,description TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),
+                admin_note TEXT NOT NULL DEFAULT '',version INTEGER NOT NULL DEFAULT 1,
+                deleted INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+                updated_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+            )''')
+            db.execute('''INSERT INTO reports_new
+                (id,user_id,target_type,target,description,status,admin_note,version,deleted,created_at,updated_at)
+                SELECT id,user_id,target_type,target,description,status,admin_note,version,deleted,created_at,updated_at FROM reports''')
+            db.execute('DROP TABLE reports')
+            db.execute('ALTER TABLE reports_new RENAME TO reports')
+        db.execute('CREATE UNIQUE INDEX IF NOT EXISTS one_report_per_user_target ON reports(user_id,target_type,target) WHERE deleted=0')
+        db.execute('CREATE INDEX IF NOT EXISTS report_lookup ON reports(target_type,target,status,deleted)')

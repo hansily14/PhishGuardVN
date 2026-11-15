@@ -22,3 +22,14 @@ def normalize_phone(value):
     elif s.startswith('84') and len(s) in (11,12):s='0'+s[2:]
     if not re.fullmatch(r'0\d{9,10}',s):raise ValueError('Số điện thoại Việt Nam cần 10–11 chữ số, bắt đầu bằng 0 hoặc +84.')
     return s
+
+
+def normalize_bank_account(value):
+    """Normalize a bank account identifier without converting it to an integer."""
+    import re
+    if not isinstance(value, str):
+        raise ValueError('Số tài khoản phải là chuỗi chữ số.')
+    normalized = re.sub(r'[\s-]', '', value)
+    if not re.fullmatch(r'[0-9]{6,20}', normalized):
+        raise ValueError('Số tài khoản ngân hàng phải gồm 6–20 chữ số; không nhập tên chủ tài khoản hoặc mã OTP.')
+    return normalized

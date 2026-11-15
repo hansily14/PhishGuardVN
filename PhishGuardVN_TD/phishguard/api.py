@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ConfigDict
 from .database import connection, initialize
-from .security import password_hash, password_matches, token_hash, normalize_phone
+from .security import password_hash, password_matches, token_hash, normalize_phone, normalize_bank_account
 from .features import normalize_url
 from .engine import Engine
 ROOT=Path(__file__).resolve().parents[1]
@@ -29,7 +29,7 @@ class CheckBody(StrictModel):
     text:str=Field(default='',max_length=6000)
     urls:list[str]=Field(default_factory=list,max_length=20)
 class ReportBody(StrictModel):
-    target_type:Literal['phone','url']
+    target_type:Literal['phone','url','bank_account']
     target:str=Field(min_length=3,max_length=4096)
     description:str=Field(min_length=10,max_length=3000)
 class ReportEdit(ReportBody):
@@ -77,7 +77,7 @@ def create_app(db_path=None,engine=None):
         if user['role']!='admin':raise HTTPException(403,'Chức năng dành cho quản trị viên.')
         return user
     def target(kind,value):
-        try:return normalize_phone(value) if kind=='phone' else normalize_url(value)
+        try:return normalize_phone(value) if kind=='phone' else normalize_bank_account(value) if kind=='bank_account' else normalize_url(value)
         except (ValueError,UnicodeError) as e:raise HTTPException(422,str(e))
     def own_report(db,rid,user):
         row=db.execute('SELECT * FROM reports WHERE id=? AND deleted=0',(rid,)).fetchone()
@@ -186,7 +186,7 @@ def create_app(db_path=None,engine=None):
             own_report(db,rid,user);db.execute('UPDATE reports SET deleted=1,version=version+1 WHERE id=?',(rid,));audit(db,user['id'],'report_withdrawn',rid)
         return {'message':'Đã rút báo cáo.'}
     @app.get('/api/lookup')
-    def lookup(target_type:Literal['phone','url'],q:str=Query(min_length=3,max_length=4096),user=Depends(current)):
+    def lookup(target_type:Literal['phone','url','bank_account'],q:str=Query(min_length=3,max_length=4096),user=Depends(current)):
         rate(('lookup',user['id']),60,60);normalized=target(target_type,q)
         with connection(db_path) as db:
             row=db.execute("SELECT count(*) reports,count(DISTINCT user_id) reporters,max(updated_at) latest FROM reports WHERE target_type=? AND target=? AND status='approved' AND deleted=0",(target_type,normalized)).fetchone()
