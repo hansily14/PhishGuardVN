@@ -15,11 +15,11 @@ Base URL: `http://127.0.0.1:8000`. Toàn bộ JSON dùng UTF-8. `/openapi.json` 
 | GET /api/checks | Đăng nhập | Lịch sử của chính mình, offset/limit |
 | GET /api/checks/{id} | Chủ sở hữu | Kết quả chi tiết |
 | DELETE /api/checks/{id} | Chủ sở hữu | Xóa dữ liệu kiểm tra |
-| POST /api/reports | Đăng nhập | Gửi báo cáo phone/url, pending |
+| POST /api/reports | Đăng nhập | Gửi báo cáo phone/url/bank_account, pending |
 | GET /api/reports | Đăng nhập | Báo cáo của chính mình, offset/limit |
 | PUT /api/reports/{id} | Chủ sở hữu | Sửa với version, đưa về pending |
 | DELETE /api/reports/{id} | Chủ sở hữu | Rút báo cáo, ngừng xuất hiện công khai |
-| GET /api/lookup | Đăng nhập | Tra cứu đúng phone/url đã chuẩn hóa |
+| GET /api/lookup | Đăng nhập | Tra cứu đúng phone/url/bank_account đã chuẩn hóa |
 | GET /api/stats | Đăng nhập | Thống kê cá nhân; period=day/week/month |
 | GET /api/admin/reports | Admin | Tất cả báo cáo, lọc status, phân trang |
 | POST /api/admin/reports/{id}/moderate | Admin | Duyệt/từ chối kèm note và version |
@@ -43,6 +43,6 @@ Ví dụ POST /api/reports:
 
 Sửa báo cáo thêm `version` nhận từ danh sách. Duyệt cần `{"status":"approved","note":"Đã kiểm tra nội dung","version":1}`. Nếu người gửi sửa trước khi admin duyệt, version cũ bị trả 409; tải lại dữ liệu rồi xem xét lại.
 
-Lookup trả tổng báo cáo đã duyệt, số người gửi khác nhau, thời điểm cập nhật gần nhất. Không trả tên người tố cáo hoặc mô tả có thể chứa thông tin cá nhân. URL được đối chiếu chính xác sau canonicalization; một đường dẫn bị tố cáo không khiến mọi URL trong domain tự bị gắn cờ. Số điện thoại +84/84 được chuẩn hóa về 0.
+Lookup trả tổng báo cáo đã duyệt, số người gửi khác nhau, thời điểm cập nhật gần nhất. Không trả tên người tố cáo hoặc mô tả có thể chứa thông tin cá nhân. URL được đối chiếu chính xác sau canonicalization; một đường dẫn bị tố cáo không khiến mọi URL trong domain tự bị gắn cờ. Số điện thoại +84/84 được chuẩn hóa về 0. Số tài khoản ngân hàng được chuẩn hóa bằng cách bỏ khoảng trắng/gạch nối, giữ nguyên số 0 đầu và chỉ chấp nhận 6–20 chữ số; không lưu tên chủ tài khoản, mật khẩu hoặc OTP.
 
 Giới hạn demo: SQLite và limiter trong bộ nhớ cho một worker; triển khai nhiều worker cần PostgreSQL, Redis limiter, HTTPS và cookie Secure. DB dùng thời gian UTC, thống kê đổi sang UTC+7. Chuỗi báo cáo/kiểm tra được hiển thị bằng textContent để tránh HTML thực thi.

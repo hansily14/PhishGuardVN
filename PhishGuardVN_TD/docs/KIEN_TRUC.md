@@ -24,7 +24,7 @@ Kết quả AI → checks thuộc chủ tài khoản. Người dùng tự gửi 
 - users: username duy nhất, mật khẩu PBKDF2, role, active.
 - sessions: hash token, CSRF, user_id, hạn dùng.
 - checks: nội dung nhập, kết quả JSON, thời gian, owner.
-- reports: phone/url, mô tả, trạng thái, version, deleted, owner và thời gian.
+- reports: phone/url/bank_account, mô tả, trạng thái, version, deleted, owner và thời gian.
 - audit: ai thực hiện, hành động, đối tượng, nhận xét, thời gian.
 
 Một báo cáo đang hoạt động cho mỗi (user_id,target_type,target). Sửa báo cáo đã duyệt làm status trở về pending. Thu hồi/xóa mềm loại khỏi count công khai nhưng giữ dấu vết xử lý. Không xóa tài khoản vật lý để tránh mất quan hệ audit; khóa/mở tài khoản đáp ứng quản lý người dùng.
