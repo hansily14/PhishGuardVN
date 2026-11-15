@@ -1,0 +1,31 @@
+{
+  "week": 11,
+  "source_snapshot": "PhishGuardVN.zip / PhishGuardVN_Weeks5_8",
+  "code_changes": {
+    "bank_account_reporting": true,
+    "bank_account_lookup": true,
+    "sqlite_migration_preserves_existing_reports": true,
+    "user_admin_frontend_options": true,
+    "special_input_tests_added": true
+  },
+  "automated_tests": {
+    "pytest_functions_passed": 12,
+    "pytest_functions_failed": 0,
+    "javascript_syntax_check": "passed"
+  },
+  "api_benchmark": "reports/week11_benchmark.json",
+  "benchmark_environment": "Linux / Python 3.13.5 / FastAPI TestClient",
+  "pending_manual_verification": [
+    "Run updated code in the user's Windows Python 3.12 environment",
+    "Perform rendered-browser visual checks for User and Admin",
+    "Capture real UI screenshots",
+    "Repeat latency benchmark on the target laptop"
+  ],
+  "model_evaluation_constraints": {
+    "sms_labels": "Legitimate vs Spam/Scam binary; not 3-class phishing",
+    "xlmr": "training script prepared; checkpoint not executed",
+    "fusion": "exploratory proxy only; label semantics mismatch",
+    "robustness": "sensitivity-only without independent ground truth",
+    "test_tuning": "not performed"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "benchmark": "PhishGuardVN Week 11 API end-to-end inference",
+  "environment_python": "3.13.5",
+  "warmup_requests": 1,
+  "measured_requests_per_case": 8,
+  "cases": {
+    "text_only": {
+      "n": 8,
+      "mean_ms": 14.412,
+      "median_ms": 14.36,
+      "p95_ms": 16.645,
+      "min_ms": 12.732,
+      "max_ms": 16.645
+    },
+    "url_only": {
+      "n": 8,
+      "mean_ms": 16.676,
+      "median_ms": 16.495,
+      "p95_ms": 19.838,
+      "min_ms": 13.972,
+      "max_ms": 19.838
+    },
+    "text_plus_url": {
+      "n": 8,
+      "mean_ms": 18.905,
+      "median_ms": 18.492,
+      "p95_ms": 22.331,
+      "min_ms": 17.097,
+      "max_ms": 22.331
+    }
+  }
+}

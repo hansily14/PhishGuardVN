@@ -1,0 +1,131 @@
+{
+  "provenance": "Executed against supplied PhishGuardVN.zip and SMS source bundle. URL feature extraction used the bundled tldextract 5.4.0 snapshot; XGBoost runtime 3.1.3 loaded the JSON model trained under 3.4.1. SMS pipeline artifact was verified fitted and evaluated using the exact 2,436-row split manifest.",
+  "url_xgboost_test": {
+    "n": 34017,
+    "threshold_from_validation": 0.39,
+    "precision": 0.9944142512,
+    "recall": 0.9542919232,
+    "f1": 0.9739400436,
+    "fpr": 0.0036611914,
+    "pr_auc_average_precision": 0.9914022358,
+    "confusion_matrix_TN_FP_FN_TP": [
+      [
+        20138,
+        74
+      ],
+      [
+        631,
+        13174
+      ]
+    ],
+    "feature_build_seconds": 2.15368,
+    "prediction_seconds": 0.0722,
+    "mean_total_feature_plus_prediction_ms_per_url": 0.06543
+  },
+  "url_logistic_regression_test": {
+    "n": 34017,
+    "selected_C_on_validation": 1.0,
+    "threshold_selected_on_validation": 0.28,
+    "precision": 0.9835979234,
+    "recall": 0.9469757334,
+    "f1": 0.9649394745,
+    "fpr": 0.0107856719,
+    "pr_auc_average_precision": 0.9867218448,
+    "confusion_matrix_TN_FP_FN_TP": [
+      [
+        19994,
+        218
+      ],
+      [
+        732,
+        13073
+      ]
+    ],
+    "prediction_seconds": 0.0074
+  },
+  "sms_tfidf_lr_test": {
+    "n": 344,
+    "threshold_from_validation": 0.52,
+    "precision": 0.8952380952,
+    "recall": 0.94,
+    "f1": 0.9170731707,
+    "fpr": 0.0450819672,
+    "pr_auc_average_precision": 0.9696217488,
+    "confusion_matrix_TN_FP_FN_TP": [
+      [
+        233,
+        11
+      ],
+      [
+        6,
+        94
+      ]
+    ],
+    "prediction_seconds": 0.0765,
+    "mean_prediction_ms_per_sms": 0.2224
+  },
+  "sms_tfidf_lr_validation": {
+    "n": 376,
+    "threshold": 0.52,
+    "precision": 0.972972973,
+    "recall": 0.9230769231,
+    "f1": 0.9473684211,
+    "fpr": 0.0115830116,
+    "pr_auc_average_precision": 0.9839585392,
+    "confusion_matrix_TN_FP_FN_TP": [
+      [
+        256,
+        3
+      ],
+      [
+        9,
+        108
+      ]
+    ]
+  },
+  "sms_text_url_proxy_test": {
+    "n": 344,
+    "with_url": 210,
+    "alpha_selected_on_validation": 1.0,
+    "threshold_selected_on_validation": 0.52,
+    "precision": 0.8952380952,
+    "recall": 0.94,
+    "f1": 0.9170731707,
+    "fpr": 0.0450819672,
+    "pr_auc_average_precision": 0.9696217488,
+    "confusion_matrix_TN_FP_FN_TP": [
+      [
+        233,
+        11
+      ],
+      [
+        6,
+        94
+      ]
+    ],
+    "status": "exploratory_only_label_semantics_mismatch; alpha 1.0 means text-only, URL adds no value under this proxy objective"
+  },
+  "sms_url_only_paired_test": {
+    "n": 210,
+    "precision": 0.2784090909,
+    "recall": 0.6901408451,
+    "f1": 0.3967611336,
+    "fpr": 0.9136690647,
+    "pr_auc_average_precision": 0.2927373772,
+    "confusion_matrix_TN_FP_FN_TP": [
+      [
+        12,
+        127
+      ],
+      [
+        22,
+        49
+      ]
+    ],
+    "status": "not a valid phishing benchmark; labels are source Spam/Scam and URL model target is phishing"
+  },
+  "xlmr": {
+    "status": "script prepared, not trained or evaluated in this environment",
+    "task": "binary source SMS Legitimate vs Spam/Scam; no gold 3-class phishing labels available"
+  }
+}
