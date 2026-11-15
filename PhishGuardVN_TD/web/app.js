@@ -88,7 +88,7 @@ function renderResult(node, r) {
         setTimeout(() => { const t = document.querySelector('#report-target'); if (t) t.value = u.url; }, 300); }, 'secondary')));
 }
 
-function lookupView(view) { heading(view, 'Tra cứu phản ánh cộng đồng', 'Kiểm tra số điện thoại hoặc URL đã được người dùng khác báo cáo và quản trị viên duyệt.'); const type = $('select', { id: 'lookup-type' }, $('option', { value: 'phone' }, 'Số điện thoại'), $('option', { value: 'url' }, 'URL')); const input = $('input', { id: 'lookup-q', required: '', placeholder: 'Nhập số điện thoại hoặc URL cần tra cứu' }); const result = $('div'); const form = $('form', { onsubmit: safe(async e => { e.preventDefault(); const r = await api('/lookup?target_type=' + type.value + '&q=' + encodeURIComponent(input.value));
+function lookupView(view) { heading(view, 'Tra cứu phản ánh cộng đồng', 'Kiểm tra số điện thoại, số tài khoản ngân hàng hoặc URL đã được người dùng khác báo cáo và quản trị viên duyệt.'); const type = $('select', { id: 'lookup-type' }, $('option', { value: 'phone' }, 'Số điện thoại'), $('option', { value: 'url' }, 'URL'), $('option', { value: 'bank_account' }, 'Số tài khoản ngân hàng')); const input = $('input', { id: 'lookup-q', required: '', placeholder: 'Nhập số điện thoại, số tài khoản hoặc URL cần tra cứu' }); const result = $('div'); const form = $('form', { onsubmit: safe(async e => { e.preventDefault(); const r = await api('/lookup?target_type=' + type.value + '&q=' + encodeURIComponent(input.value));
             result.replaceChildren(card('Kết quả tra cứu', $('p', { class: 'target' }, r.target), $('div', { class: 'score' + (r.approved_reports ? ' high' : '') }, r.approved_reports), $('p', {}, 'báo cáo đã được duyệt từ ' + r.unique_reporters + ' người dùng khác nhau'), $('p', { class: 'muted' }, 'Cập nhật gần nhất: ' + date(r.last_approved_update)), $('div', { class: 'note' }, r.notice))); }) }, field('Loại thông tin', type), field('Thông tin tra cứu', input), $('div', { class: 'actions' }, $('button', { type: 'submit' }, 'Tra cứu ngay')));
     view.append($('div', { class: 'grid' }, card('Tìm thông tin', form), result)); }
 async function reportsView(view, isAdmin) {
@@ -98,8 +98,8 @@ async function reportsView(view, isAdmin) {
     let status = 'all';
     let editing = null;
     let formCard;
-    const type = $('select', { id: 'report-type' }, $('option', { value: 'url' }, 'URL'), $('option', { value: 'phone' }, 'Số điện thoại'));
-    const target = $('input', { id: 'report-target', required: '', maxlength: 4096, placeholder: 'Thông tin cần báo cáo' });
+    const type = $('select', { id: 'report-type' }, $('option', { value: 'url' }, 'URL'), $('option', { value: 'phone' }, 'Số điện thoại'), $('option', { value: 'bank_account' }, 'Số tài khoản ngân hàng'));
+    const target = $('input', { id: 'report-target', required: '', maxlength: 4096, placeholder: 'URL, số điện thoại hoặc số tài khoản ngân hàng' });
     const description = $('textarea', { id: 'report-description', required: '', minlength: 10, maxlength: 3000, placeholder: 'Mô tả sự việc và lý do nghi ngờ. Không đưa mật khẩu, OTP hoặc thông tin riêng tư của người khác.' });
     const submit = $('button', { type: 'submit' }, 'Gửi báo cáo');
     const reset = () => { editing = null;
@@ -110,7 +110,7 @@ async function reportsView(view, isAdmin) {
     if (!isAdmin) { formCard = card('Gửi phản ánh', $('form', { onsubmit: safe(async e => { e.preventDefault(); const body = { target_type: type.value, target: target.value, description: description.value }; if (editing) { await api('/reports/' + editing.id, 'PUT', {...body, version: editing.version }); } else await api('/reports', 'POST', body);
                 notice('Đã lưu báo cáo và chuyển sang chờ duyệt.');
                 reset();
-                await load(); }) }, field('Loại đối tượng', type), field('Số điện thoại hoặc URL', target), field('Nội dung báo cáo', description), $('div', { class: 'actions' }, submit, button('Hủy sửa', reset, 'secondary'))));
+                await load(); }) }, field('Loại đối tượng', type), field('URL, số điện thoại hoặc số tài khoản ngân hàng', target), field('Nội dung báo cáo', description), $('div', { class: 'actions' }, submit, button('Hủy sửa', reset, 'secondary'))));
         view.append(formCard); } else { const filter = $('select', { class: 'filter', 'aria-label': 'Lọc trạng thái', onchange: safe(async e => { status = e.target.value;
                 offset = 0;
                 await load(); }) }, ['all', 'pending', 'approved', 'rejected'].map(x => $('option', { value: x }, ({ all: 'Tất cả', pending: 'Chờ duyệt', approved: 'Đã duyệt', rejected: 'Từ chối' })[x])));
@@ -130,7 +130,7 @@ async function reportsView(view, isAdmin) {
                     submit.textContent = 'Lưu sửa · gửi duyệt lại';
                     formCard.scrollIntoView({ behavior: 'smooth' }); }, 'secondary'), button('Rút báo cáo', async() => { if (!confirm('Rút báo cáo này khỏi hệ thống?')) return;
                     await api('/reports/' + r.id, 'DELETE');
-                    await load(); }, 'danger')); } return [$('div', {}, $('div', { class: 'target' }, r.target), $('div', { class: 'muted' }, isAdmin ? r.username : date(r.created_at))), r.description, $('div', {}, badge(r.status), $('p', { class: 'muted' }, r.admin_note)), actions]; })) : $('div', { class: 'empty' }, 'Chưa có báo cáo trong danh sách.'), pager(response.total, offset, 20, async next => { offset = next;
+                    await load(); }, 'danger')); } return [$('div', {}, $('div', { class: 'muted' }, ({phone:'Số điện thoại',url:'URL',bank_account:'Số tài khoản ngân hàng'})[r.target_type] || r.target_type), $('div', { class: 'target' }, r.target), $('div', { class: 'muted' }, isAdmin ? r.username : date(r.created_at))), r.description, $('div', {}, badge(r.status), $('p', { class: 'muted' }, r.admin_note)), actions]; })) : $('div', { class: 'empty' }, 'Chưa có báo cáo trong danh sách.'), pager(response.total, offset, 20, async next => { offset = next;
             await load(); }))) }
     await load();
 }
